@@ -1,4 +1,3 @@
-// index.js
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -13,16 +12,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded images statically
+// Serve uploaded images statically (ONLY works locally, not on Render)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Use API routes under the "/api" prefix
 app.use('/api', houseRoutes);
 
-// (Optional) Serve front-end static files from the "public" folder
+// Serve front-end static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
+

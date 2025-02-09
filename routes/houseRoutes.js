@@ -21,3 +21,4 @@ router.get('/houses', houseController.getHouseEntries);
 router.delete('/houses/:id', houseController.deleteHouseEntry);
 
 module.exports = router;
+
