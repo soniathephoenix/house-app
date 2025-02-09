@@ -1,4 +1,4 @@
-const { createHouse, getHouses, deleteHouse } = require('../models/houseModel'); // ✅ Import deleteHouse
+const { createHouse, getHouses, deleteHouse } = require('../models/houseModel');
 const path = require('path');
 
 async function createHouseEntry(req, res) {
@@ -39,7 +39,6 @@ async function getHouseEntries(req, res) {
   }
 }
 
-// ✅ Fix: Add the deleteHouseEntry function
 async function deleteHouseEntry(req, res) {
   try {
     const houseId = req.params.id;
@@ -58,4 +57,5 @@ async function deleteHouseEntry(req, res) {
   }
 }
 
-module.exports = { createHouseEntry, getHouseEntries, deleteHouseEntry }; // ✅ Export deleteHouseEntry
+module.exports = { createHouseEntry, getHouseEntries, deleteHouseEntry };
+

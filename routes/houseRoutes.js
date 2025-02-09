@@ -18,7 +18,6 @@ const upload = multer({ storage: storage });
 
 router.post('/houses', upload.single('image'), houseController.createHouseEntry);
 router.get('/houses', houseController.getHouseEntries);
-router.delete('/houses/:id', houseController.deleteHouseEntry); // ✅ Ensure this route is correct
+router.delete('/houses/:id', houseController.deleteHouseEntry);
 
 module.exports = router;
-

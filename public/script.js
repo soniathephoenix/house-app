@@ -6,7 +6,7 @@ document.getElementById('houseForm').addEventListener('submit', async function(e
     const formData = new FormData(this);
   
     try {
-      const response = await fetch('/api/houses', {
+      const response = await fetch('https://house-app-4t16.onrender.com/api/houses', {
         method: 'POST',
         body: formData
       });
