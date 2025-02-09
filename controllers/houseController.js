@@ -1,37 +1,33 @@
-// controllers/houseController.js
 const { createHouse, getHouses } = require('../models/houseModel');
 const path = require('path');
 
 async function createHouseEntry(req, res) {
   try {
-    // Extract values from form data; note that text fields are in req.body and the uploaded file is in req.file.
-    const {
-      energy_efficiency,
-      bedrooms,
-      safety,
-      distance_work,
-      distance_pickleball,
-      view_marina,
-      price
-    } = req.body;
+    console.log('Received form data:', req.body);
 
-    // Convert values to the correct data types.
+    // Ensure the fields are parsed into correct data types
     const houseData = {
-      energy_efficiency,
-      bedrooms: parseInt(bedrooms),
-      // Accept "safe" or "true" as safe, anything else as unsafe:
-      safety: (safety === 'true' || safety === 'safe'),
-      distance_work: parseFloat(distance_work),
-      distance_pickleball: parseFloat(distance_pickleball),
-      view_marina: view_marina === 'true',
-      price: parseFloat(price),
+      energy_efficiency: req.body.energy_efficiency,
+      bedrooms: parseInt(req.body.bedrooms),
+      safety: req.body.safety === 'true' || req.body.safety === 'safe',
+      distance_work: parseFloat(req.body.distance_work),
+      distance_pickleball: parseFloat(req.body.distance_pickleball),
+      view_marina: req.body.view_marina === 'true',
+      price: parseFloat(req.body.price),
       image_url: req.file ? `/uploads/${req.file.filename}` : null
     };
 
+    console.log('Data to be inserted:', houseData);
+
+    // Insert the house into Supabase
     const newHouse = await createHouse(houseData);
+
+    console.log('New house added:', newHouse);
+
+    // Return the inserted data as JSON response
     res.status(201).json(newHouse);
   } catch (error) {
-    console.error(error);
+    console.error('Error in createHouseEntry:', error);
     res.status(500).json({ error: error.message });
   }
 }
@@ -39,9 +35,10 @@ async function createHouseEntry(req, res) {
 async function getHouseEntries(req, res) {
   try {
     const houses = await getHouses();
+    console.log('Fetched houses:', houses);
     res.json(houses);
   } catch (error) {
-    console.error(error);
+    console.error('Error in getHouseEntries:', error);
     res.status(500).json({ error: error.message });
   }
 }

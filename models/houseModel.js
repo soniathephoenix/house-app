@@ -1,47 +1,61 @@
-// models/houseModel.js
 const supabase = require('../config/supabaseClient');
 
 async function createHouse(data) {
-  const { energy_efficiency, bedrooms, safety, distance_work, distance_pickleball, view_marina, price, image_url } = data;
-  const { data: result, error } = await supabase
-    .from('houses')
-    .insert([{
-      energy_efficiency,
-      bedrooms,
-      safety,
-      distance_work,
-      distance_pickleball,
-      view_marina,
-      price,
-      image_url
-    }])
-    .single();
-  if (error) throw error;
-  return result;
+  try {
+    console.log('Inserting house into Supabase:', data);
+
+    const { data: result, error } = await supabase
+      .from('houses')
+      .insert([data])
+      .select()
+      .single(); // Ensures Supabase returns the inserted row
+
+    if (error) {
+      console.error('Error inserting into Supabase:', error);
+      throw error;
+    }
+
+    console.log('Inserted house:', result);
+    return result;
+  } catch (err) {
+    console.error('Unexpected error in createHouse:', err);
+    throw err;
+  }
 }
 
 async function getHouses() {
-  // Sorting by priorities:
-  // 1. energy_efficiency (A best → D worst, so ascending order because "A" < "B" < "C" < "D")
-  // 2. bedrooms (2 is better than 1, so descending)
-  // 3. safety (true is safe, so descending)
-  // 4. distance_work (shorter is better, ascending)
-  // 5. distance_pickleball (shorter is better, ascending)
-  // 6. view_marina (true is better, descending)
-  // 7. price (lower is better, ascending)
-  const { data: houses, error } = await supabase
-    .from('houses')
-    .select('*')
-    .order('energy_efficiency', { ascending: true })
-    .order('bedrooms', { ascending: false })
-    .order('safety', { ascending: false })
-    .order('distance_work', { ascending: true })
-    .order('distance_pickleball', { ascending: true })
-    .order('view_marina', { ascending: false })
-    .order('price', { ascending: true });
+  try {
+    console.log('Fetching houses from Supabase...');
 
-  if (error) throw error;
-  return houses;
+    const { data: houses, error } = await supabase
+      .from('houses')
+      .select('*');
+
+    if (error) {
+      console.error('Error fetching houses:', error);
+      throw error;
+    }
+
+    console.log('Fetched houses:', houses);
+
+    // Sorting in JavaScript to avoid issues with multiple `.order()` calls
+    houses.sort((a, b) => {
+      const energyOrder = a.energy_efficiency.localeCompare(b.energy_efficiency); // A < B < C < D
+      if (energyOrder !== 0) return energyOrder;
+
+      if (b.bedrooms !== a.bedrooms) return b.bedrooms - a.bedrooms; // 2 is better than 1
+      if (b.safety !== a.safety) return b.safety - a.safety; // Safe (true) is better than unsafe (false)
+      if (a.distance_work !== b.distance_work) return a.distance_work - b.distance_work; // Shorter is better
+      if (a.distance_pickleball !== b.distance_pickleball) return a.distance_pickleball - b.distance_pickleball; // Shorter is better
+      if (b.view_marina !== a.view_marina) return b.view_marina - a.view_marina; // True is better than false
+      return a.price - b.price; // Lower is better
+    });
+
+    return houses;
+  } catch (err) {
+    console.error('Unexpected error in getHouses:', err);
+    throw err;
+  }
 }
 
 module.exports = { createHouse, getHouses };
