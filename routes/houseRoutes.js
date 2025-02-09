@@ -1,11 +1,9 @@
-// routes/houseRoutes.js
 const express = require('express');
 const router = express.Router();
 const houseController = require('../controllers/houseController');
 const multer = require('multer');
 const path = require('path');
 
-// Configure multer for file uploads. Files are stored in the "uploads" folder.
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, '../uploads'));
@@ -18,10 +16,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// POST route to create a new house entry (with image upload handling)
 router.post('/houses', upload.single('image'), houseController.createHouseEntry);
-
-// GET route to fetch all house entries
 router.get('/houses', houseController.getHouseEntries);
+router.delete('/houses/:id', houseController.deleteHouseEntry); // ✅ Ensure this route is correct
 
 module.exports = router;
+

@@ -1,11 +1,10 @@
-const { createHouse, getHouses } = require('../models/houseModel');
+const { createHouse, getHouses, deleteHouse } = require('../models/houseModel'); // ✅ Import deleteHouse
 const path = require('path');
 
 async function createHouseEntry(req, res) {
   try {
     console.log('Received form data:', req.body);
 
-    // Ensure the fields are parsed into correct data types
     const houseData = {
       energy_efficiency: req.body.energy_efficiency,
       bedrooms: parseInt(req.body.bedrooms),
@@ -19,12 +18,9 @@ async function createHouseEntry(req, res) {
 
     console.log('Data to be inserted:', houseData);
 
-    // Insert the house into Supabase
     const newHouse = await createHouse(houseData);
 
     console.log('New house added:', newHouse);
-
-    // Return the inserted data as JSON response
     res.status(201).json(newHouse);
   } catch (error) {
     console.error('Error in createHouseEntry:', error);
@@ -43,4 +39,23 @@ async function getHouseEntries(req, res) {
   }
 }
 
-module.exports = { createHouseEntry, getHouseEntries };
+// ✅ Fix: Add the deleteHouseEntry function
+async function deleteHouseEntry(req, res) {
+  try {
+    const houseId = req.params.id;
+    console.log(`Deleting house with ID: ${houseId}`);
+
+    const success = await deleteHouse(houseId);
+
+    if (success) {
+      res.status(200).json({ message: 'House deleted successfully' });
+    } else {
+      res.status(404).json({ error: 'House not found' });
+    }
+  } catch (error) {
+    console.error('Error in deleteHouseEntry:', error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
+module.exports = { createHouseEntry, getHouseEntries, deleteHouseEntry }; // ✅ Export deleteHouseEntry

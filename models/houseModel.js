@@ -8,7 +8,7 @@ async function createHouse(data) {
       .from('houses')
       .insert([data])
       .select()
-      .single(); // Ensures Supabase returns the inserted row
+      .single();
 
     if (error) {
       console.error('Error inserting into Supabase:', error);
@@ -26,7 +26,6 @@ async function createHouse(data) {
 async function getHouses() {
   try {
     console.log('Fetching houses from Supabase...');
-
     const { data: houses, error } = await supabase
       .from('houses')
       .select('*');
@@ -38,17 +37,16 @@ async function getHouses() {
 
     console.log('Fetched houses:', houses);
 
-    // Sorting in JavaScript to avoid issues with multiple `.order()` calls
     houses.sort((a, b) => {
-      const energyOrder = a.energy_efficiency.localeCompare(b.energy_efficiency); // A < B < C < D
+      const energyOrder = a.energy_efficiency.localeCompare(b.energy_efficiency);
       if (energyOrder !== 0) return energyOrder;
 
-      if (b.bedrooms !== a.bedrooms) return b.bedrooms - a.bedrooms; // 2 is better than 1
-      if (b.safety !== a.safety) return b.safety - a.safety; // Safe (true) is better than unsafe (false)
-      if (a.distance_work !== b.distance_work) return a.distance_work - b.distance_work; // Shorter is better
-      if (a.distance_pickleball !== b.distance_pickleball) return a.distance_pickleball - b.distance_pickleball; // Shorter is better
-      if (b.view_marina !== a.view_marina) return b.view_marina - a.view_marina; // True is better than false
-      return a.price - b.price; // Lower is better
+      if (b.bedrooms !== a.bedrooms) return b.bedrooms - a.bedrooms;
+      if (b.safety !== a.safety) return b.safety - a.safety;
+      if (a.distance_work !== b.distance_work) return a.distance_work - b.distance_work;
+      if (a.distance_pickleball !== b.distance_pickleball) return a.distance_pickleball - b.distance_pickleball;
+      if (b.view_marina !== a.view_marina) return b.view_marina - a.view_marina;
+      return a.price - b.price;
     });
 
     return houses;
@@ -58,4 +56,28 @@ async function getHouses() {
   }
 }
 
-module.exports = { createHouse, getHouses };
+
+async function deleteHouse(id) {
+  try {
+    console.log(`Deleting house with ID: ${id}`);
+
+    const { error } = await supabase
+      .from('houses')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting from Supabase:', error);
+      return false;
+    }
+
+    console.log(`House with ID ${id} deleted successfully`);
+    return true;
+  } catch (err) {
+    console.error('Unexpected error in deleteHouse:', err);
+    throw err;
+  }
+}
+
+
+module.exports = { createHouse, getHouses, deleteHouse };
